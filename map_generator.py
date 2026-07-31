@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 import webbrowser
 import os
 import folium
+import re
 
 # поиск папки, в которой лежит скрипт
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -32,11 +33,12 @@ gdf = gpd.read_file(GEOJSON_PATH)
 
 
 def clean_name(name):
-    if name is None: return ""
+    if name is None: 
+        return ""
     name = str(name).lower()
-    for word in ["г.о.", "городской округ", "г.", "область", "район"]:
-        name = name.replace(word, "")
-    return name.strip()
+    pattern = r'\b(г\.о\.|городской округ|г\.|область|район)\b'
+    cleaned = re.sub(pattern, '', name)
+    return re.sub(r'\s+', ' ', cleaned).strip()
 
 
 df["OMSU_clean"] = df["OMSU"].apply(clean_name)
